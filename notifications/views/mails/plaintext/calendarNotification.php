@@ -15,7 +15,7 @@
 /* @var $originator \humhub\modules\user\models\User */
 /* @var $source yii\db\ActiveRecord */
 /* @var $contentContainer \humhub\modules\content\components\ContentContainerActiveRecord */
-/* @var $space humhub\modules\space\models\Space */
+/* @var $space \humhub\modules\space\models\Space */
 /* @var $record \humhub\modules\notification\models\Notification */
 /* @var $html string */
 /* @var $text string */

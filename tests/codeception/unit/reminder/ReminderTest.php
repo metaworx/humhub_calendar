@@ -9,7 +9,6 @@ use humhub\modules\calendar\models\reminder\CalendarReminder;
 use humhub\modules\calendar\models\reminder\CalendarReminderSent;
 use humhub\modules\space\models\Space;
 use humhub\modules\user\models\User;
-use Yii;
 
 class ReminderTest extends CalendarUnitTest
 {

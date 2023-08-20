@@ -3,15 +3,9 @@
 namespace humhub\modules\calendar\tests\codeception\unit\entry;
 
 use calendar\CalendarUnitTest;
-use humhub\modules\calendar\interfaces\CalendarService;
-use humhub\modules\content\models\Content;
 use DateTime;
-use DateInterval;
-use humhub\modules\calendar\models\CalendarEntryQuery;
-use humhub\modules\calendar\models\CalendarEntryParticipant;
+use humhub\modules\calendar\interfaces\CalendarService;
 use humhub\modules\space\models\Space;
-use humhub\modules\user\models\User;
-use humhub\modules\content\components\ActiveQueryContent;
 use Yii;
 
 class CalendarServiceTest extends CalendarUnitTest
@@ -156,9 +150,9 @@ class CalendarServiceTest extends CalendarUnitTest
 
     /**
      * [] = Event {} = Search
-     * 
+     *
      * [------{]------}
-     * 
+     *
      * @throws \Exception
      */
     public function testNonAllDayStartIncludedBoundary()
@@ -172,7 +166,7 @@ class CalendarServiceTest extends CalendarUnitTest
         // Entry from '2019-12-29T00:00:00' - '2019-12-29T00:00:00' should be included in search
         $entryStart = new DateTime('2019-12-28T12:00:00');
         $entryEnd = new DateTime('2019-12-29T00:01:00');
-        
+
         $entry1 = $this->createEntry($entryStart, $entryEnd, 'e1', $s1);
         $entries = $this->service->getCalendarItems($searchDateStart, $searchDateEnd);
         $this->assertCount(1, $entries);

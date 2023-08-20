@@ -120,7 +120,7 @@ class CalendarUtils
 
         if($format) {
             try {
-                $dt = DateTime::createFromFormat(static::parseFormat($format), $value);
+                $dt = DateTime::createFromFormat(static::parseFormat($format), $value ?? '');
                 if($dt === false) {
                     return false;
                 }
@@ -225,7 +225,7 @@ class CalendarUtils
             );
         }
 
-        return $date instanceof DateTime ? clone $date : new DateTime($date);
+        return $date instanceof DateTime ? clone $date : new DateTime((string)$date);
     }
 
     /**

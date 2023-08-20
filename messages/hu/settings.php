@@ -1,7 +1,7 @@
 <?php
-
-return [
-    'Participation' => 'Részvétel',
-    'Reminder' => 'Emlékeztető',
-    'Full calendar' => '',
-];
+return array (
+  'Basic' => 'Alap',
+  'Full calendar' => 'Teljes naptár',
+  'Participation' => 'Részvétel',
+  'Reminder' => 'Emlékeztető',
+);

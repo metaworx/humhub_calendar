@@ -3,14 +3,14 @@
 namespace humhub\modules\calendar;
 
 use humhub\components\console\Application as ConsoleApplication;
-use humhub\modules\calendar\models\CalendarEntryType;
-use Yii;
 use humhub\modules\calendar\helpers\Url;
+use humhub\modules\calendar\models\CalendarEntry;
+use humhub\modules\calendar\models\CalendarEntryType;
+use humhub\modules\content\components\ContentContainerActiveRecord;
 use humhub\modules\content\components\ContentContainerModule;
 use humhub\modules\space\models\Space;
 use humhub\modules\user\models\User;
-use humhub\modules\calendar\models\CalendarEntry;
-use humhub\modules\content\components\ContentContainerActiveRecord;
+use Yii;
 
 class Module extends ContentContainerModule
 {
@@ -110,7 +110,7 @@ class Module extends ContentContainerModule
     public function disable()
     {
         foreach (CalendarEntry::find()->all() as $entry) {
-            $entry->delete();
+            $entry->hardDelete();
         }
 
         CalendarEntryType::deleteByModule();
@@ -124,7 +124,7 @@ class Module extends ContentContainerModule
     {
         parent::disableContentContainer($container);
         foreach (CalendarEntry::find()->contentContainer($container)->all() as $entry) {
-            $entry->delete();
+            $entry->hardDelete();
         }
 
         CalendarEntryType::deleteByModule($container);

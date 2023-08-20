@@ -16,13 +16,7 @@
 namespace humhub\modules\calendar\interfaces\event;
 
 
-use humhub\modules\calendar\models\CalendarEntryType;
 use humhub\modules\space\models\Space;
-use Yii;
-use yii\base\Model;
-use humhub\modules\calendar\helpers\Url;
-use humhub\components\SettingsManager;
-use humhub\modules\content\components\ContentContainerActiveRecord;
 
 /**
  * Instances of this class represent an event type of a specific container and can be used

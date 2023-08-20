@@ -5,24 +5,23 @@ namespace humhub\modules\calendar\controllers;
 use DateTime;
 use humhub\components\Controller;
 use humhub\modules\calendar\helpers\CalendarUtils;
+use humhub\modules\calendar\helpers\Url;
 use humhub\modules\calendar\interfaces\CalendarService;
 use humhub\modules\calendar\interfaces\recurrence\RecurrenceFormModel;
 use humhub\modules\calendar\models\CalendarEntry;
 use humhub\modules\calendar\models\CalendarEntryDummy;
 use humhub\modules\calendar\models\fullcalendar\FullCalendar;
 use humhub\modules\calendar\models\SnippetModuleSettings;
-use humhub\modules\calendar\permissions\CreateEntry;
 use humhub\modules\calendar\widgets\FilterType;
 use humhub\modules\content\components\ContentContainerModuleManager;
 use humhub\modules\content\models\ContentContainer;
 use humhub\modules\content\models\ContentContainerModuleState;
-use humhub\modules\space\models\Membership;
 use humhub\modules\space\models\Space;
+use humhub\modules\space\models\Membership;
 use humhub\modules\user\models\User;
 use humhub\widgets\ModalButton;
 use humhub\widgets\ModalDialog;
 use Yii;
-use humhub\modules\calendar\helpers\Url;
 use yii\web\HttpException;
 
 /**

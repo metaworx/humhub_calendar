@@ -9,9 +9,8 @@
 namespace  humhub\modules\calendar\notifications;
 
 use humhub\libs\Html;
-use humhub\modules\content\notifications\ContentCreatedNotificationCategory;
-use humhub\modules\notification\components\BaseNotification;
 use humhub\modules\space\models\Space;
+use humhub\modules\notification\components\BaseNotification;
 use Yii;
 
 /**

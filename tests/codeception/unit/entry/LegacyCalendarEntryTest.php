@@ -5,14 +5,7 @@ namespace humhub\modules\calendar\tests\codeception\unit\entry;
 use calendar\CalendarUnitTest;
 use humhub\modules\calendar\models\CalendarEntry;
 use humhub\modules\calendar\models\forms\CalendarEntryForm;
-use humhub\modules\content\models\Content;
-use DateTime;
-use DateInterval;
-use humhub\modules\calendar\models\CalendarEntryQuery;
-use humhub\modules\calendar\models\CalendarEntryParticipant;
 use humhub\modules\space\models\Space;
-use humhub\modules\user\models\User;
-use humhub\modules\content\components\ActiveQueryContent;
 use Yii;
 
 class LegacyCalendarEntryTest extends CalendarUnitTest

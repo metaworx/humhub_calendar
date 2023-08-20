@@ -3,9 +3,9 @@
     "name": "Calendar",
     "description": "Calendar for spaces or user profiles.",
     "keywords": ["calendar"],
-    "version": "1.4.0",
+    "version": "1.5.1",
     "humhub": {
-        "minVersion": "1.13"
+        "minVersion": "1.14"
     },
     "homepage": "https://github.com/humhub/calendar",
     "authors": [
@@ -18,6 +18,6 @@
         {
             "name": "Julian Harrer"
         }
-    ],    
+    ],
     "screenshots": ["resources/screen1.jpg", "resources/screen2.jpg", "resources/screen3.jpg"]
 }

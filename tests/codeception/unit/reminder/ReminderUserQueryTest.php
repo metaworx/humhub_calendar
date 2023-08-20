@@ -2,12 +2,12 @@
 
 namespace humhub\modules\calendar\tests\codeception\unit\reminder;
 
-use humhub\modules\calendar\models\participation\CalendarEntryParticipation;
-use humhub\modules\space\models\Space;
-use humhub\modules\user\models\User;
 use calendar\CalendarUnitTest;
 use DateInterval;
 use DateTime;
+use humhub\modules\calendar\models\participation\CalendarEntryParticipation;
+use humhub\modules\space\models\Space;
+use humhub\modules\user\models\User;
 
 class ReminderUserQueryTest  extends CalendarUnitTest
 {

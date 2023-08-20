@@ -3,30 +3,30 @@
 namespace humhub\modules\calendar;
 
 use DateTime;
+use humhub\modules\calendar\helpers\CalendarUtils;
 use humhub\modules\calendar\helpers\RecurrenceHelper;
+use humhub\modules\calendar\helpers\Url;
+use humhub\modules\calendar\integration\BirthdayCalendar;
+use humhub\modules\calendar\interfaces\CalendarService;
+use humhub\modules\calendar\interfaces\event\CalendarEventIF;
+use humhub\modules\calendar\interfaces\event\CalendarItemTypesEvent;
+use humhub\modules\calendar\interfaces\event\EditableEventIF;
+use humhub\modules\calendar\interfaces\recurrence\RecurrentEventIF;
+use humhub\modules\calendar\interfaces\reminder\CalendarEventReminderIF;
 use humhub\modules\calendar\models\CalendarEntry;
 use humhub\modules\calendar\models\CalendarEntryParticipant;
 use humhub\modules\calendar\models\MenuSettings;
-use humhub\modules\space\models\Space;
-use humhub\modules\user\models\User;
-use humhub\modules\calendar\interfaces\event\EditableEventIF;
-use humhub\modules\calendar\interfaces\event\CalendarItemTypesEvent;
-use humhub\modules\calendar\interfaces\recurrence\RecurrentEventIF;
-use humhub\modules\content\components\ContentActiveRecord;
-use humhub\modules\calendar\helpers\CalendarUtils;
-use humhub\modules\calendar\interfaces\event\CalendarEventIF;
-use humhub\modules\calendar\integration\BirthdayCalendar;
-use humhub\modules\calendar\interfaces\reminder\CalendarEventReminderIF;
-use humhub\modules\calendar\models\reminder\ReminderService;
 use humhub\modules\calendar\models\reminder\CalendarReminder;
 use humhub\modules\calendar\models\reminder\CalendarReminderSent;
+use humhub\modules\calendar\models\reminder\ReminderService;
 use humhub\modules\calendar\models\SnippetModuleSettings;
 use humhub\modules\calendar\widgets\DownloadIcsLink;
-use humhub\modules\calendar\interfaces\CalendarService;
 use humhub\modules\calendar\widgets\ReminderLink;
 use humhub\modules\calendar\widgets\UpcomingEvents;
+use humhub\modules\content\components\ContentActiveRecord;
 use humhub\modules\content\models\Content;
-use humhub\modules\calendar\helpers\Url;
+use humhub\modules\space\models\Space;
+use humhub\modules\user\models\User;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\helpers\Console;
@@ -341,7 +341,7 @@ class Events
             foreach ($duplicateQuery->all() as $duplicate) {
                 if(RecurrenceHelper::isRecurrentInstance($duplicate) && $duplicate->id !== $duplicatedRecurrenceArr['id']) {
                     if ($integrityController->showFix('Delete duplicated recurrent event instance ' . $duplicate->id . '!')) {
-                        $duplicate->delete();
+                        $duplicate->hardDelete();
                     }
                 }
             }

@@ -4,8 +4,8 @@
 namespace humhub\modules\calendar\tests\codeception\unit;
 
 use calendar\CalendarUnitTest;
-use humhub\modules\calendar\interfaces\event\CalendarItemTypesEvent;
 use humhub\modules\calendar\interfaces\CalendarService;
+use humhub\modules\calendar\interfaces\event\CalendarItemTypesEvent;
 use humhub\modules\calendar\interfaces\event\CalendarTypeIF;
 use humhub\modules\calendar\models\CalendarEntryType;
 use humhub\modules\calendar\tests\codeception\unit\models\OtherTestEventType;

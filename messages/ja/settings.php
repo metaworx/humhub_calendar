@@ -1,6 +1,7 @@
 <?php
 return array (
-  'Full calendar' => '',
-  'Participation' => '',
+  'Basic' => '基本',
+  'Full calendar' => 'フルカレンダー',
+  'Participation' => '参加',
   'Reminder' => 'リマインダー',
 );

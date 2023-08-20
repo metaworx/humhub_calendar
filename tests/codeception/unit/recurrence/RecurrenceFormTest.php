@@ -9,7 +9,6 @@ use humhub\modules\calendar\interfaces\recurrence\RecurrenceFormModel;
 use humhub\modules\calendar\models\CalendarEntry;
 use humhub\modules\space\models\Space;
 use Recurr\Frequency;
-use Yii;
 
 class RecurrenceFormTest extends CalendarUnitTest
 {

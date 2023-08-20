@@ -22,12 +22,16 @@ class SettingsCest
         $I->amAdmin();
         $I->amOnRoute(['/calendar/config']);
         $I->waitForText('Calendar module configuration');
-        $I->selectOption('#participationsettings-participation_mode', 0);
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->selectOption('#participationsettings-participation_mode', '0');
         $I->click('Save');
 
         $I->seeSuccess();
 
-        $I->see('Reset', '.panel-body');
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->see('Reset', '.tab-pane.active');
 
         $I->enableModule(1, 'calendar');
 
@@ -36,41 +40,53 @@ class SettingsCest
         $I->click('Next', '#globalModal');
 
         $I->waitForText('Participants',null, '#globalModal');
-        $I->seeInField('#calendarentry-participation_mode', 0);
+        $I->seeInField('#calendarentry-participation_mode', '0');
         $I->dontSeeElement('.participationOnly');
 
         $I->amOnSpace1('/calendar/container-config');
-        $I->selectOption('#participationsettings-participation_mode', 2);
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->selectOption('#participationsettings-participation_mode', '2');
         $I->click('[for="participationsettings-allow_decline"]');
         $I->click('[for="participationsettings-allow_maybe"]');
 
         $I->wait(2);
         $I->click('Save');
         $I->seeSuccess();
-        $I->see('Reset', '.layout-content-container');
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->see('Reset', '.tab-pane.active');
 
         $I->amOnSpace1('/calendar/view');
         $I->createEventToday('Setting Event','Setting Description',null,null,false);
         $I->click('Next', '#globalModal');
         $I->waitForText('Participants',null, '#globalModal h4');
-        $I->seeInField('#calendarentry-participation_mode', 2);
+        $I->seeInField('#calendarentry-participation_mode', '2');
         $I->seeElement('.participationOnly');
         $I->dontSeeCheckboxIsChecked('#calendarentry-allow_decline');
         $I->dontSeeCheckboxIsChecked('#calendarentry-allow_decline');
 
         $I->amOnSpace1('/calendar/container-config');
-        $I->click('Reset', '.layout-content-container');
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->click('Reset', '[data-ui-widget="calendar.participation.Form"]');
 
         $I->seeSuccess();
 
-        $I->seeInField('#participationsettings-participation_mode', 0);
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->seeInField('#participationsettings-participation_mode', '0');
 
         $I->amOnRoute(['/calendar/config']);
-        $I->click('Reset', '.panel-body');
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->click('Reset', '[data-ui-widget="calendar.participation.Form"]');
 
         $I->seeSuccess();
 
-        $I->seeInField('#participationsettings-participation_mode', 2);
+        $I->jsClick('.tab-participation');
+        $I->waitForText('Default participation settings');
+        $I->seeInField('#participationsettings-participation_mode', '2');
 
         $I->seeCheckboxIsChecked('#participationsettings-allow_decline');
         $I->seeCheckboxIsChecked('#participationsettings-allow_decline');

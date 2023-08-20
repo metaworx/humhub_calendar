@@ -8,15 +8,15 @@
 namespace humhub\modules\calendar\widgets;
 
 
-use humhub\modules\calendar\helpers\Url;
-use humhub\modules\user\models\User;
-use humhub\widgets\ModalButton;
-use Yii;
 use humhub\components\Widget;
+use humhub\modules\calendar\helpers\Url;
 use humhub\modules\content\components\ContentContainerActiveRecord;
 use humhub\modules\content\helpers\ContentContainerHelper;
 use humhub\modules\space\models\Space;
+use humhub\modules\user\models\User;
 use humhub\widgets\Button;
+use humhub\widgets\ModalButton;
+use Yii;
 
 class ConfigureButton extends Widget
 {

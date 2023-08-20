@@ -6,8 +6,8 @@
  *
  */
 
-use humhub\modules\calendar\widgets\mails\CalendarEventMailInfo;
 use humhub\modules\calendar\models\CalendarEntry;
+use humhub\modules\calendar\widgets\mails\CalendarEventMailInfo;
 
 /* @var $this yii\web\View */
 /* @var $viewable humhub\modules\content\notifications\ContentCreated */
@@ -18,7 +18,7 @@ use humhub\modules\calendar\models\CalendarEntry;
 /* @var $originator \humhub\modules\user\models\User */
 /* @var $source yii\db\ActiveRecord */
 /* @var $contentContainer \humhub\modules\content\components\ContentContainerActiveRecord */
-/* @var $space humhub\modules\space\models\Space */
+/* @var $space \humhub\modules\space\models\Space */
 /* @var $record \humhub\modules\notification\models\Notification */
 /* @var $html string */
 /* @var $text string */

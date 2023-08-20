@@ -9,8 +9,8 @@
 namespace calendar\acceptance;
 
 use calendar\AcceptanceTester;
-use humhub\modules\space\models\Membership;
 use humhub\modules\space\models\Space;
+use humhub\modules\space\models\Membership;
 
 class CreateSpaceEntryCest
 {

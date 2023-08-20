@@ -2,36 +2,38 @@
 
 namespace humhub\modules\calendar\models;
 
+use DateTime;
+use humhub\modules\calendar\helpers\CalendarUtils;
 use humhub\modules\calendar\helpers\RecurrenceHelper;
+use humhub\modules\calendar\helpers\Url;
 use humhub\modules\calendar\interfaces\event\CalendarEntryTypeSetting;
+use humhub\modules\calendar\interfaces\event\CalendarEventStatusIF;
 use humhub\modules\calendar\interfaces\fullcalendar\FullCalendarEventIF;
 use humhub\modules\calendar\interfaces\participation\CalendarEventParticipationIF;
+use humhub\modules\calendar\interfaces\recurrence\AbstractRecurrenceQuery;
 use humhub\modules\calendar\interfaces\recurrence\RecurrentEventIF;
 use humhub\modules\calendar\interfaces\reminder\CalendarEventReminderIF;
-use humhub\modules\calendar\interfaces\recurrence\AbstractRecurrenceQuery;
 use humhub\modules\calendar\models\participation\CalendarEntryParticipation;
 use humhub\modules\calendar\models\recurrence\CalendarEntryRecurrenceQuery;
 use humhub\modules\calendar\models\reminder\CalendarReminder;
-use humhub\modules\calendar\permissions\CreateEntry;
-use humhub\modules\content\components\ContentActiveRecord;
-use humhub\modules\user\components\ActiveQueryUser;
-use Yii;
-use DateTime;
-use humhub\modules\calendar\helpers\Url;
-use humhub\modules\calendar\helpers\CalendarUtils;
-use humhub\modules\calendar\interfaces\event\CalendarEventStatusIF;
 use humhub\modules\calendar\notifications\CanceledEvent;
 use humhub\modules\calendar\notifications\ReopenedEvent;
+use humhub\modules\calendar\permissions\CreateEntry;
 use humhub\modules\calendar\permissions\ManageEntry;
 use humhub\modules\calendar\widgets\WallEntry;
+use humhub\modules\content\components\ContentActiveRecord;
+use humhub\modules\content\components\ContentContainerActiveRecord;
 use humhub\modules\content\models\Content;
 use humhub\modules\content\models\ContentTag;
+use humhub\modules\space\models\Space;
 use humhub\modules\search\interfaces\Searchable;
 use humhub\modules\space\models\Membership;
-use humhub\modules\space\models\Space;
-use humhub\widgets\Label;
-use humhub\modules\content\components\ContentContainerActiveRecord;
+use humhub\modules\user\components\ActiveQueryUser;
 use humhub\modules\user\models\User;
+use humhub\widgets\Button;
+use humhub\widgets\Label;
+use Yii;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "calendar_entry".
@@ -175,7 +177,7 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
         // Note we can't call this in `init()` because of https://github.com/humhub/humhub/issues/3734
         $this->participation->setDefautls();
 
-        if(!$this->color && $this->content->container) {
+        if (!$this->color && $this->content->container) {
             $typeSetting = new CalendarEntryTypeSetting(['type' => $this->getEventType(), 'contentContainer' => $this->content->container]);
             $this->color = $typeSetting->getColor();
         }
@@ -260,8 +262,8 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
      */
     public function validateRecurrenceId()
     {
-        if($this->isNewRecord && RecurrenceHelper::isRecurrentInstance($this)) {
-            if(static::findOne(['recurrence_id' => $this->recurrence_id, 'parent_event_id' => $this->parent_event_id])) {
+        if ($this->isNewRecord && RecurrenceHelper::isRecurrentInstance($this)) {
+            if (static::findOne(['recurrence_id' => $this->recurrence_id, 'parent_event_id' => $this->parent_event_id])) {
                 $this->addError('recurrence_id', 'Recurrence instance with the same recurrence_id already persisted');
             }
         }
@@ -367,11 +369,48 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
             $this->participation->setDefautls();
         }
 
-        if(RecurrenceHelper::isRecurrentRoot($this)) {
+        if (RecurrenceHelper::isRecurrentRoot($this)) {
             $this->streamChannel = null;
         }
 
         return parent::beforeSave($insert);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function afterSoftDelete()
+    {
+        parent::afterSoftDelete();
+
+        // Run soft deletion of all child entries on soft delete of root entry
+        if (!$this->getRecurrenceRootId() && $this->isRecurringEnabled()) {
+            foreach ($this->getRecurrenceInstances()->all() as $recurrenceEntry) {
+                /* @var CalendarEntry $recurrenceEntry */
+                $recurrenceEntry->softDelete();
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function afterStateChange(?int $newState, ?int $previousState): void
+    {
+        parent::afterStateChange($newState, $previousState);
+
+        // Restore root and all recurrence/child entries if at least one related entry has been restored
+        if ($newState === Content::STATE_PUBLISHED && $previousState === Content::STATE_DELETED && $this->isRecurringEnabled()) {
+            $root = $this->getRecurrenceRoot() ?? $this;
+            $entries = $root->getRecurrenceInstances()->all();
+            $entries[] = $root;
+            foreach ($entries as $entry) {
+                if ($entry->content->state != $newState) {
+                    $entry->content->setState($newState);
+                    $entry->content->save();
+                }
+            }
+        }
     }
 
     /**
@@ -383,6 +422,20 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
     {
         $this->participation->deleteAll();
         return parent::beforeDelete();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete()
+    {
+        if (RecurrenceHelper::isRecurrentInstance($this)) {
+            // Recurrent entry should be deleted hardly, because
+            // the column `exdate` should be filled for the root entry after deletion
+            return $this->hardDelete();
+        }
+
+        return parent::delete();
     }
 
     public function setExdate($exdateStr)
@@ -429,7 +482,7 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
      */
     public function setType($type)
     {
-        if(empty($type)) {
+        if (empty($type)) {
             $this->removeType();
             return;
         }
@@ -474,7 +527,7 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
                     return $this->participation->findParticipants([
                         CalendarEntryParticipant::PARTICIPATION_STATE_ACCEPTED,
                         CalendarEntryParticipant::PARTICIPATION_STATE_MAYBE])
-                        ->union(User::find()->where(['id' =>  $this->content->container->id]));
+                        ->union(User::find()->where(['id' => $this->content->container->id]));
 
             }
         }
@@ -561,7 +614,7 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
      */
     public function getBadge()
     {
-        if($this->closed) {
+        if ($this->closed) {
             return Label::danger(Yii::t('CalendarModule.base', 'canceled'))->right();
         }
 
@@ -620,9 +673,18 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
      *
      * @return string
      */
-    public function getLocation()
+    public function getLocation(bool $asHtml = false)
     {
-        return $this->location;
+        if (!$asHtml) {
+            return $this->location;
+        }
+        if (
+            filter_var($this->location, FILTER_VALIDATE_URL) !== false
+            && strpos($this->location, 'https://') === 0 // restrict to secure URLs (and not HTTP, SSF, FTP, etc.)
+        ) {
+            return Button::asLink($this->location)->link($this->location)->options(['target' => '_blank']);
+        }
+        return Html::encode($this->location);
     }
 
     public function getDescription()
@@ -692,10 +754,10 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
      */
     public function getCalendarViewMode()
     {
-        if(empty($this->getCalendarViewUrl())) {
+        if (empty($this->getCalendarViewUrl())) {
             return static::VIEW_MODE_REDIRECT;
         }
-        
+
         return static::VIEW_MODE_MODAL;
     }
 
@@ -985,7 +1047,7 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
      */
     public function saveEvent()
     {
-       return $this->save();
+        return $this->save();
     }
 
     /**
@@ -994,7 +1056,7 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, Recurrent
      */
     public function canMove(ContentContainerActiveRecord $container = null)
     {
-        if(!$container) {
+        if (!$container) {
             return true;
         }
 
